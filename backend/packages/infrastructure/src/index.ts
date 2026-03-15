@@ -2,6 +2,8 @@ export * from "./db/PostgresExecutor.js";
 export * from "./db/PostgresUnitOfWork.js";
 export * from "./db/client.js";
 export * from "./db/migrate.js";
+export * from "./auth/LocalAuthStore.js";
+export * from "./auth/password.js";
 export * from "./db/repositories/PostgresAuditStore.js";
 export * from "./db/repositories/PostgresDefectStore.js";
 export * from "./db/repositories/PostgresEvidenceStore.js";

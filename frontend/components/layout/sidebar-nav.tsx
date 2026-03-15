@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { useAuthState } from "@/providers/auth-provider";
 import { hasAnyRole, routePermissions } from "@/lib/permissions";
+import { Button } from "@/components/ui/button";
 
 const items = [
   { href: "/", label: "Home" },
@@ -16,7 +17,7 @@ const items = [
 
 export function SidebarNav() {
   const pathname = usePathname();
-  const { user, isLoading } = useAuthState();
+  const { user, isLoading, logout } = useAuthState();
 
   if (isLoading || !user) {
     return (
@@ -46,7 +47,11 @@ export function SidebarNav() {
 
       <div className="mt-6 rounded-2xl border border-white/10 p-4 text-sm">
         <div className="font-semibold">{user.displayName}</div>
+        <div className="mt-1 text-slate-400">{user.email}</div>
         <div className="mt-1 text-slate-400">{user.roles.join(" · ")}</div>
+        <Button variant="ghost" className="mt-4 w-full border border-white/10 text-slate-200" onClick={() => void logout()}>
+          Sign out
+        </Button>
       </div>
 
       <div className="mt-8 text-xs uppercase tracking-[0.18em] text-slate-400">Navigation</div>

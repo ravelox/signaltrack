@@ -48,6 +48,7 @@ What it does:
 - creates `frontend/.env.local` from [frontend/.env.example](/Users/dkelly/Projects/signaltrack/frontend/.env.example) if it does not already exist
 - installs backend dependencies
 - installs frontend dependencies
+- leaves the seeded local admin credentials at the defaults in `backend/.env` unless you change them
 
 After bootstrap:
 
@@ -103,6 +104,13 @@ The backend Docker stack exposes:
 - MinIO API: `http://localhost:9000`
 - MinIO console: `http://localhost:9001`
 
+Default local admin created by migration:
+
+- email: `admin@signaltrack.local`
+- password: `change-me-admin`
+
+Override those defaults with `DEFAULT_ADMIN_EMAIL`, `DEFAULT_ADMIN_PASSWORD`, and related values in [backend/.env.example](/Users/dkelly/Projects/signaltrack/backend/.env.example).
+
 ### Frontend
 
 If you prefer to install manually instead of using `./bootstrap.sh`:
@@ -131,11 +139,13 @@ pnpm start
 
 By default, the frontend env example points to `http://localhost:3000` and enables mocks with `NEXT_PUBLIC_SIGNALTRACK_USE_MOCKS=true`. Set that to `false` when testing against the live backend.
 
+When using the live backend auth flow, sign in from the home page with the seeded local admin account unless you have changed the backend defaults.
+
 ## Docker
 
 Both sides include Docker assets:
 
-- [backend/docker-compose.yaml](/Users/dkelly/Projects/signaltrack/backend/docker-compose.yaml) starts Postgres, MinIO, migrations, and the backend API
+- [backend/docker-compose.yaml](/Users/dkelly/Projects/signaltrack/backend/docker-compose.yaml) starts Postgres, MinIO, migrations, the backend API, and the worker
 - [frontend/docker-compose.yaml](/Users/dkelly/Projects/signaltrack/frontend/docker-compose.yaml) serves the Next.js app on `http://localhost:3001`
 
 ### Run backend under Docker
@@ -154,6 +164,7 @@ What this starts:
 - MinIO console on `http://localhost:9001`
 - migration job before API startup
 - backend API on `http://localhost:3000`
+- backend worker in the same stack
 
 Run detached if preferred:
 

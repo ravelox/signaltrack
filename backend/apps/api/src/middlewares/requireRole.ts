@@ -3,7 +3,7 @@ type Role = "reporter" | "engineer" | "engineering_manager" | "org_admin";
 
 declare module "fastify" {
   interface FastifyRequest {
-    currentUser: { id: string; orgId: string; roles: Role[] } | null;
+    currentUser: { id: string; orgId: string; email: string; displayName: string; roles: Role[] } | null;
   }
 }
 

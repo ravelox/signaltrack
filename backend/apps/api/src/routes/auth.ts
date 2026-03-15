@@ -1,19 +1,10 @@
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
-import { BeginLoginService, CompleteOidcLoginService } from "@signaltrack/application";
-import { PostgresOidcStateStore } from "@signaltrack/infrastructure";
+import { env, LocalAuthStore, verifyPassword } from "@signaltrack/infrastructure";
 import { mapError } from "../errors/mapError.js";
 
-class StubAuthorizationUrlBuilder {
-  public async buildAuthorizationUrl(input: { orgSlug: string; state: string; nonce: string }): Promise<string> {
-    return `https://example-oidc.local/auth?org=${encodeURIComponent(input.orgSlug)}&state=${encodeURIComponent(input.state)}&nonce=${encodeURIComponent(input.nonce)}`;
-  }
-}
-
 export const registerAuthRoutes = async (app: FastifyInstance) => {
-  const stateStore = new PostgresOidcStateStore();
-  const beginService = new BeginLoginService(new StubAuthorizationUrlBuilder(), stateStore);
-  const completeService = new CompleteOidcLoginService(stateStore);
+  const authStore = new LocalAuthStore();
 
   app.get("/v1/auth/session", async (request) => {
     if (!request.currentUser) return { user: null };
@@ -22,24 +13,49 @@ export const registerAuthRoutes = async (app: FastifyInstance) => {
       user: {
         id: request.currentUser.id,
         orgId: request.currentUser.orgId,
-        email: "kim@example.com",
-        displayName: "Kim Example",
+        email: request.currentUser.email,
+        displayName: request.currentUser.displayName,
         roles: request.currentUser.roles
       }
     };
   });
 
-  app.post("/v1/auth/login/begin", async (request, reply) => {
+  app.post("/v1/auth/login", async (request, reply) => {
     try {
       const body = z.object({
-        orgSlug: z.string().min(1),
-        state: z.string().min(1),
-        nonce: z.string().min(1),
-        expiresAt: z.string().datetime()
+        email: z.string().email(),
+        password: z.string().min(1)
       }).parse(request.body);
 
+      const user = await authStore.getUserByEmail(body.email);
+      if (!user?.passwordHash || !verifyPassword(body.password, user.passwordHash)) {
+        return reply.code(401).send({
+          error: {
+            code: "INVALID_CREDENTIALS",
+            message: "Invalid email or password."
+          }
+        });
+      }
+
+      const expiresAt = new Date(Date.now() + env.SESSION_TTL_HOURS * 60 * 60 * 1000);
+      const sessionId = await authStore.createSession(user.id, expiresAt);
+
+      reply.setCookie(env.SESSION_COOKIE_NAME, reply.signCookie(sessionId), {
+        path: "/",
+        httpOnly: true,
+        sameSite: "lax",
+        secure: false,
+        expires: expiresAt
+      });
+
       return {
-        authorizationUrl: await beginService.execute(body)
+        user: {
+          id: user.id,
+          orgId: user.orgId,
+          email: user.email,
+          displayName: user.displayName,
+          roles: user.roles
+        }
       };
     } catch (error) {
       const mapped = mapError(error);
@@ -47,18 +63,18 @@ export const registerAuthRoutes = async (app: FastifyInstance) => {
     }
   });
 
-  app.post("/v1/auth/login/validate", async (request, reply) => {
-    try {
-      const body = z.object({
-        state: z.string().min(1),
-        expectedOrgSlug: z.string().optional(),
-        nonceFromProvider: z.string().optional()
-      }).parse(request.body);
-
-      return await completeService.validateState(body);
-    } catch (error) {
-      const mapped = mapError(error);
-      return reply.code(mapped.statusCode).send(mapped.body);
+  app.post("/v1/auth/logout", async (request, reply) => {
+    const rawSessionCookie = request.cookies[env.SESSION_COOKIE_NAME];
+    if (rawSessionCookie) {
+      const { valid, value } = request.unsignCookie(rawSessionCookie);
+      if (valid) {
+        await authStore.deleteSession(value);
+      }
     }
+
+    reply.clearCookie(env.SESSION_COOKIE_NAME, {
+      path: "/"
+    });
+    return reply.code(204).send();
   });
 };

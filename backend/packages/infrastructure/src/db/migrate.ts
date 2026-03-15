@@ -1,5 +1,7 @@
 import type { Sql } from "postgres";
 import { createSql } from "./client.js";
+import { env } from "../env.js";
+import { hashPassword } from "../auth/password.js";
 
 export async function runMigrations(db: Sql<Record<string, unknown>>): Promise<void> {
   await db.unsafe(`
@@ -17,8 +19,12 @@ export async function runMigrations(db: Sql<Record<string, unknown>>): Promise<v
       org_id uuid NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
       email text NOT NULL,
       display_name text NOT NULL,
+      password_hash text NULL,
       created_at timestamptz NOT NULL DEFAULT now()
     );
+
+    CREATE UNIQUE INDEX IF NOT EXISTS users_org_id_email_key
+      ON users (org_id, lower(email));
 
     CREATE TABLE IF NOT EXISTS role_assignments (
       id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -27,6 +33,19 @@ export async function runMigrations(db: Sql<Record<string, unknown>>): Promise<v
       role text NOT NULL,
       created_at timestamptz NOT NULL DEFAULT now()
     );
+
+    CREATE UNIQUE INDEX IF NOT EXISTS role_assignments_org_id_user_id_role_key
+      ON role_assignments (org_id, user_id, role);
+
+    CREATE TABLE IF NOT EXISTS sessions (
+      id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+      user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      expires_at timestamptz NOT NULL,
+      created_at timestamptz NOT NULL DEFAULT now()
+    );
+
+    CREATE INDEX IF NOT EXISTS sessions_user_id_idx ON sessions (user_id);
+    CREATE INDEX IF NOT EXISTS sessions_expires_at_idx ON sessions (expires_at);
 
     CREATE TABLE IF NOT EXISTS defects (
       id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -71,9 +90,19 @@ export async function runMigrations(db: Sql<Record<string, unknown>>): Promise<v
       created_at timestamptz NOT NULL DEFAULT now()
     );
 
-    ALTER TABLE defects
-    ADD CONSTRAINT IF NOT EXISTS defects_current_next_action_id_fkey
-    FOREIGN KEY (current_next_action_id) REFERENCES next_actions(id);
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1
+        FROM pg_constraint
+        WHERE conname = 'defects_current_next_action_id_fkey'
+      ) THEN
+        ALTER TABLE defects
+        ADD CONSTRAINT defects_current_next_action_id_fkey
+        FOREIGN KEY (current_next_action_id) REFERENCES next_actions(id);
+      END IF;
+    END
+    $$;
 
     CREATE TABLE IF NOT EXISTS reports (
       id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -122,6 +151,39 @@ export async function runMigrations(db: Sql<Record<string, unknown>>): Promise<v
       created_at timestamptz NOT NULL DEFAULT now()
     );
   `);
+
+  const passwordHash = hashPassword(env.DEFAULT_ADMIN_PASSWORD);
+
+  const [organization] = await db<{ id: string }[]>`
+    INSERT INTO organizations (name, slug)
+    VALUES (${env.DEFAULT_ORG_NAME}, ${env.DEFAULT_ORG_SLUG})
+    ON CONFLICT (slug) DO UPDATE SET name = EXCLUDED.name
+    RETURNING id
+  `;
+
+  const [adminUser] = await db<{ id: string }[]>`
+    INSERT INTO users (org_id, email, display_name, password_hash)
+    VALUES (
+      ${organization!.id}::uuid,
+      ${env.DEFAULT_ADMIN_EMAIL},
+      ${env.DEFAULT_ADMIN_DISPLAY_NAME},
+      ${passwordHash}
+    )
+    ON CONFLICT (org_id, (lower(email))) DO UPDATE
+      SET display_name = EXCLUDED.display_name,
+          password_hash = EXCLUDED.password_hash
+    RETURNING id
+  `;
+
+  await db`
+    INSERT INTO role_assignments (org_id, user_id, role)
+    VALUES
+      (${organization!.id}::uuid, ${adminUser!.id}::uuid, 'org_admin'),
+      (${organization!.id}::uuid, ${adminUser!.id}::uuid, 'engineering_manager'),
+      (${organization!.id}::uuid, ${adminUser!.id}::uuid, 'engineer'),
+      (${organization!.id}::uuid, ${adminUser!.id}::uuid, 'reporter')
+    ON CONFLICT (org_id, user_id, role) DO NOTHING
+  `;
 }
 
 const main = async () => {

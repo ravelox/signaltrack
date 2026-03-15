@@ -76,3 +76,4 @@ export type CreateNextActionInput = {
 };
 export type UpdateStatusesInput = { defectId: string; reporterStatus: string; internalStatus: string };
 export type AuthSession = { user: CurrentUser | null };
+export type LoginInput = { email: string; password: string };

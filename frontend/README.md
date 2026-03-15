@@ -16,6 +16,15 @@ Included:
 
 This bundle is intended to close out the current frontend phase by rounding out the missing structural pieces rather than focusing on one narrow incremental change.
 
+## Local auth
+
+When `NEXT_PUBLIC_SIGNALTRACK_USE_MOCK_AUTH=false`, the home page uses the live backend session flow and sign-in form.
+
+With the default backend seed values:
+
+- email: `admin@signaltrack.local`
+- password: `change-me-admin`
+
 ## Run with Docker
 
 The frontend Docker setup expects the backend API to already be reachable at `http://host.docker.internal:3000`, so start the backend stack first.

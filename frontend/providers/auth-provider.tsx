@@ -1,8 +1,9 @@
 "use client";
 
 import { createContext, useContext } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AppRole, CurrentUser } from "@/lib/auth/types";
+import type { LoginInput } from "@/lib/types";
 import { signalTrackClient } from "@/lib/api/client";
 import { mockCurrentUser } from "@/lib/auth/mock-user";
 import { frontendEnv } from "@/lib/env";
@@ -10,14 +11,19 @@ import { frontendEnv } from "@/lib/env";
 type AuthContextValue = {
   user: CurrentUser | null;
   isLoading: boolean;
+  login: (input: LoginInput) => Promise<void>;
+  logout: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue>({
   user: frontendEnv.useMockAuth ? mockCurrentUser : null,
-  isLoading: !frontendEnv.useMockAuth
+  isLoading: !frontendEnv.useMockAuth,
+  login: async () => undefined,
+  logout: async () => undefined
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const queryClient = useQueryClient();
   const sessionQuery = useQuery({
     queryKey: ["auth", "session"],
     queryFn: signalTrackClient.getAuthSession,
@@ -28,11 +34,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const user = frontendEnv.useMockAuth ? mockCurrentUser : (sessionQuery.data?.user ?? null);
 
+  const loginMutation = useMutation({
+    mutationFn: async (input: LoginInput) => signalTrackClient.login(input),
+    onSuccess: async (session) => {
+      queryClient.setQueryData(["auth", "session"], session);
+      await queryClient.invalidateQueries({ queryKey: ["auth", "session"] });
+    }
+  });
+
+  const logoutMutation = useMutation({
+    mutationFn: async () => signalTrackClient.logout(),
+    onSuccess: async () => {
+      queryClient.setQueryData(["auth", "session"], { user: null });
+      await queryClient.invalidateQueries({ queryKey: ["auth", "session"] });
+    }
+  });
+
   return (
     <AuthContext.Provider
       value={{
         user,
-        isLoading: frontendEnv.useMockAuth ? false : sessionQuery.isLoading
+        isLoading: frontendEnv.useMockAuth ? false : (sessionQuery.isLoading || loginMutation.isPending || logoutMutation.isPending),
+        login: async (input) => {
+          await loginMutation.mutateAsync(input);
+        },
+        logout: async () => {
+          await logoutMutation.mutateAsync();
+        }
       }}
     >
       {children}

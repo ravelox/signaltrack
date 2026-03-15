@@ -29,7 +29,7 @@ COPY --from=build /app/packages ./packages
 FROM runner-base AS api-runner
 ENV PORT=3000
 EXPOSE 3000
-CMD ["node", "apps/api/dist/server.js"]
+CMD ["node", "apps/api/dist/apps/api/src/server.js"]
 
 FROM runner-base AS worker-runner
 CMD ["node", "apps/worker/dist/worker.js"]

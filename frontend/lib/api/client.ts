@@ -4,6 +4,7 @@ import { mockApi } from "@/lib/api/mock-adapter";
 import type {
   AuditEvent,
   AuthSession,
+  LoginInput,
   ChangeOwnerInput,
   CreateNextActionInput,
   CreateReportInput,
@@ -19,6 +20,14 @@ export const signalTrackClient = {
   async getAuthSession(): Promise<AuthSession> {
     if (frontendEnv.useMockAuth) return mockApi.getAuthSession();
     return apiFetch<AuthSession>("/v1/auth/session");
+  },
+  async login(input: LoginInput): Promise<AuthSession> {
+    if (frontendEnv.useMockAuth) return mockApi.getAuthSession();
+    return apiFetch<AuthSession>("/v1/auth/login", { method: "POST", body: JSON.stringify(input) });
+  },
+  async logout(): Promise<void> {
+    if (frontendEnv.useMockAuth) return;
+    await apiFetch<void>("/v1/auth/logout", { method: "POST" });
   },
   async listDefects(): Promise<DefectListRow[]> {
     if (frontendEnv.useMocks) return mockApi.listDefects();

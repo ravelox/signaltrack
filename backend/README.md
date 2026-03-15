@@ -22,6 +22,15 @@ What this still is not:
 
 It is a substantially more coherent, better-integrated, production-shaped v1 codebase snapshot.
 
+## Local auth
+
+The backend now seeds a local default admin during migration. Default values:
+
+- email: `admin@signaltrack.local`
+- password: `change-me-admin`
+
+You can override these with `DEFAULT_ADMIN_EMAIL`, `DEFAULT_ADMIN_PASSWORD`, `DEFAULT_ADMIN_DISPLAY_NAME`, `DEFAULT_ORG_NAME`, and `DEFAULT_ORG_SLUG` in [backend/.env.example](/Users/dkelly/Projects/signaltrack/backend/.env.example).
+
 ## Run with Docker
 
 From [backend/docker-compose.yaml](/Users/dkelly/Projects/signaltrack/backend/docker-compose.yaml):
@@ -32,6 +41,8 @@ docker compose up --build
 ```
 
 This builds the backend image, starts Postgres and MinIO, runs migrations, and then serves the API on `http://localhost:3000`.
+
+The same stack also starts the backend worker service.
 
 Useful endpoints:
 
