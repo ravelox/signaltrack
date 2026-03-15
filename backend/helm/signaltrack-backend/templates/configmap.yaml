@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "signaltrack-backend.fullname" . }}-config
+  labels:
+    {{- include "signaltrack-backend.labels" . | nindent 4 }}
+data:
+  PORT: {{ .Values.env.PORT | quote }}
+  AWS_REGION: {{ .Values.env.AWS_REGION | quote }}
+  S3_BUCKET: {{ .Values.env.S3_BUCKET | quote }}
+  S3_FORCE_PATH_STYLE: {{ .Values.env.S3_FORCE_PATH_STYLE | quote }}
+  SIGNED_URL_TTL_SECONDS: {{ .Values.env.SIGNED_URL_TTL_SECONDS | quote }}

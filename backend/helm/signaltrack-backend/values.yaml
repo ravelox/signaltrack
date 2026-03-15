@@ -1,0 +1,42 @@
+replicaCount: 2
+
+image:
+  repository: signaltrack-backend
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 3000
+  targetPort: 3000
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: signaltrack-backend.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+env:
+  PORT: "3000"
+  AWS_REGION: "us-east-1"
+  S3_BUCKET: "signaltrack-local"
+  S3_FORCE_PATH_STYLE: "true"
+  SIGNED_URL_TTL_SECONDS: "900"
+
+secretEnv:
+  DATABASE_URL: "postgres://postgres:postgres@postgres.default.svc.cluster.local:5432/signaltrack"
+  TEST_DATABASE_URL: "postgres://postgres:postgres@postgres.default.svc.cluster.local:5432/signaltrack_test"
+  S3_ENDPOINT: "http://minio.default.svc.cluster.local:9000"
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi

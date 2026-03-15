@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: signaltrack-frontend
+  labels:
+    app.kubernetes.io/name: signaltrack-frontend
+spec:
+  selector:
+    app.kubernetes.io/name: signaltrack-frontend
+  ports:
+    - name: http
+      port: 80
+      targetPort: 3000
+  type: ClusterIP

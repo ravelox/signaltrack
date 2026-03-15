@@ -1,0 +1,84 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: signaltrack
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d signaltrack"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio123
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio-data:/data
+
+  create-bucket:
+    image: minio/mc:latest
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      until /usr/bin/mc alias set local http://minio:9000 minio minio123; do sleep 1; done;
+      /usr/bin/mc mb --ignore-existing local/signaltrack-local;
+      exit 0;
+      "
+
+  migrate:
+    image: signaltrack-backend:local
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      create-bucket:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: "postgres://postgres:postgres@postgres:5432/signaltrack"
+      TEST_DATABASE_URL: "postgres://postgres:postgres@postgres:5432/signaltrack_test"
+      AWS_REGION: "us-east-1"
+      S3_BUCKET: "signaltrack-local"
+      S3_ENDPOINT: "http://minio:9000"
+      S3_FORCE_PATH_STYLE: "true"
+      SIGNED_URL_TTL_SECONDS: "900"
+    command: ["pnpm", "migrate"]
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: signaltrack-backend:local
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: "3000"
+      DATABASE_URL: "postgres://postgres:postgres@postgres:5432/signaltrack"
+      TEST_DATABASE_URL: "postgres://postgres:postgres@postgres:5432/signaltrack_test"
+      AWS_REGION: "us-east-1"
+      S3_BUCKET: "signaltrack-local"
+      S3_ENDPOINT: "http://minio:9000"
+      S3_FORCE_PATH_STYLE: "true"
+      SIGNED_URL_TTL_SECONDS: "900"
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+  minio-data:

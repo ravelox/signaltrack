@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SignalTrack Prototype</title>
+  <link rel="stylesheet" href="prototype/styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">S</div>
+        <div>
+          <div class="brand-name">SignalTrack</div>
+          <div class="brand-sub">Frontend Prototype</div>
+        </div>
+      </div>
+
+      <div class="nav-group-label">Prototype Screens</div>
+      <nav class="nav">
+        <button class="nav-item active" data-screen="report">Report Issue</button>
+        <button class="nav-item" data-screen="defects">Defects List</button>
+        <button class="nav-item" data-screen="detail">Defect Detail</button>
+        <button class="nav-item" data-screen="manager">Manager Overview</button>
+      </nav>
+
+      <div class="nav-group-label top-gap">Design Reminders</div>
+      <div class="sidebar-card">
+        <div>Simple outside, structured inside</div>
+        <div class="muted small top-gap-sm">Reporters should never need internal process knowledge.</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <div class="eyebrow">SignalTrack v1</div>
+          <h1 id="page-title">Report Issue</h1>
+        </div>
+        <div class="topbar-actions">
+          <span class="role-pill">Role-aware prototype</span>
+        </div>
+      </header>
+
+      <section id="screen-report" class="screen active">
+        <div class="page-grid single">
+          <div class="panel hero-panel">
+            <div class="panel-title">Tell us what happened</div>
+            <div class="panel-subtitle">This flow is intentionally symptom-first and avoids internal workflow language.</div>
+
+            <label class="field">
+              <span>What were you trying to do?</span>
+              <textarea rows="4" placeholder="I was trying to export a CSV report for last quarter..."></textarea>
+            </label>
+
+            <label class="field">
+              <span>What did you expect to happen?</span>
+              <textarea rows="3" placeholder="The report should download as a CSV file."></textarea>
+            </label>
+
+            <label class="field">
+              <span>What happened instead?</span>
+              <textarea rows="3" placeholder="The page spins for a while and then shows a timeout."></textarea>
+            </label>
+
+            <div class="field">
+              <span>How much is this affecting you?</span>
+              <div class="choice-row">
+                <button class="choice selected">Blocking</button>
+                <button class="choice">Slows me down</button>
+                <button class="choice">Annoying</button>
+              </div>
+            </div>
+
+            <div class="field">
+              <span>Can you work around it?</span>
+              <div class="choice-row">
+                <button class="choice">Yes</button>
+                <button class="choice selected">No</button>
+                <button class="choice">Not sure</button>
+              </div>
+            </div>
+
+            <div class="upload-box">
+              <div class="upload-title">Attach evidence</div>
+              <div class="muted">Optional screenshots, logs, or notes</div>
+              <button class="secondary-btn top-gap-sm">Request upload</button>
+            </div>
+
+            <div class="action-row top-gap">
+              <button class="ghost-btn" data-screen-link="defects">See engineering view</button>
+              <button class="primary-btn">Submit report</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="screen-defects" class="screen">
+        <div class="toolbar">
+          <input class="search" placeholder="Search defects" />
+          <button class="filter-btn">Internal status</button>
+          <button class="filter-btn">Owner</button>
+          <button class="filter-btn">Risk</button>
+          <button class="filter-btn">More filters</button>
+          <button class="primary-btn">New defect</button>
+        </div>
+
+        <div class="panel">
+          <div class="table">
+            <div class="thead row">
+              <div>Key</div>
+              <div>External Summary</div>
+              <div>Reporter Status</div>
+              <div>Internal Status</div>
+              <div>Owner</div>
+              <div>Next Action</div>
+              <div>Risk</div>
+            </div>
+
+            <button class="row clickable" data-screen-link="detail">
+              <div>DEF-102</div>
+              <div>Export fails for large CSV files</div>
+              <div><span class="status-chip reporter">Investigating</span></div>
+              <div><span class="status-chip internal">Under investigation</span></div>
+              <div>Kim</div>
+              <div>Verify logs by Tue</div>
+              <div><span class="risk-badge risk-medium">Overdue soon</span></div>
+            </button>
+
+            <button class="row clickable" data-screen-link="detail">
+              <div>DEF-117</div>
+              <div>Login loop after password reset</div>
+              <div><span class="status-chip reporter">Received</span></div>
+              <div><span class="status-chip internal">New</span></div>
+              <div>—</div>
+              <div>—</div>
+              <div><span class="risk-badge risk-high">Unowned</span></div>
+            </button>
+
+            <button class="row clickable" data-screen-link="detail">
+              <div>DEF-121</div>
+              <div>Missing sync rows in dashboard</div>
+              <div><span class="status-chip reporter">Believed fixed</span></div>
+              <div><span class="status-chip internal">Validation pending</span></div>
+              <div>Lee</div>
+              <div>Confirm fix in prod</div>
+              <div><span class="risk-badge risk-low">Moving</span></div>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section id="screen-detail" class="screen">
+        <div class="page-grid detail">
+          <div class="content-column">
+            <div class="panel">
+              <div class="detail-header">
+                <div>
+                  <div class="eyebrow">DEF-102</div>
+                  <div class="detail-title">Export fails for large CSV files</div>
+                </div>
+                <div class="header-statuses">
+                  <span class="status-chip reporter">Reporter: Investigating</span>
+                  <span class="status-chip internal">Internal: Under investigation</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="section-title">External Summary</div>
+              <p class="body-copy">Users are unable to export large CSV reports. The issue appears user-visible and blocks downstream reporting tasks.</p>
+            </div>
+
+            <div class="panel">
+              <div class="section-title">Internal Summary</div>
+              <p class="body-copy">Likely timeout path in export worker. Need logs and request size samples. Customer-facing status should remain broad while engineering validates the bottleneck.</p>
+            </div>
+
+            <div class="panel split-panel">
+              <div>
+                <div class="section-title">Evidence</div>
+                <div class="stack">
+                  <div class="evidence-card">
+                    <div class="evidence-name">browser_console.txt</div>
+                    <div class="muted small">Uploaded 2h ago</div>
+                  </div>
+                  <div class="evidence-card">
+                    <div class="evidence-name">timeout-screenshot.png</div>
+                    <div class="muted small">Uploaded 2h ago</div>
+                  </div>
+                  <button class="secondary-btn">Add evidence</button>
+                </div>
+              </div>
+
+              <div>
+                <div class="section-title">Activity Timeline</div>
+                <div class="timeline">
+                  <div class="timeline-entry">
+                    <div class="timeline-dot"></div>
+                    <div>
+                      <div class="timeline-title">Evidence added</div>
+                      <div class="muted small">Engineer attached logs and screenshot</div>
+                    </div>
+                  </div>
+                  <div class="timeline-entry">
+                    <div class="timeline-dot"></div>
+                    <div>
+                      <div class="timeline-title">Next action created</div>
+                      <div class="muted small">Verify logs by Tuesday 2:00 PM</div>
+                    </div>
+                  </div>
+                  <div class="timeline-entry">
+                    <div class="timeline-dot"></div>
+                    <div>
+                      <div class="timeline-title">Accountable owner changed</div>
+                      <div class="muted small">Assigned to Kim</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="section-title">Linked Reports</div>
+              <div class="report-card">
+                <div class="report-title">Reporter described export timeout after choosing quarter-end data</div>
+                <div class="muted small">Impact: Blocking</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rail-column">
+            <div class="panel rail">
+              <div class="section-title">Work State</div>
+              <div class="meta-list">
+                <div class="meta-row"><span>Accountable owner</span><strong>Kim</strong></div>
+                <div class="meta-row"><span>Current next action</span><strong>Verify logs by Tue</strong></div>
+                <div class="meta-row"><span>Severity</span><strong>2</strong></div>
+                <div class="meta-row"><span>Urgency</span><strong>3</strong></div>
+                <div class="meta-row"><span>Evidence gap</span><strong>1</strong></div>
+                <div class="meta-row"><span>Stalled</span><strong>No</strong></div>
+              </div>
+
+              <div class="rail-actions top-gap">
+                <button class="primary-btn wide">Change owner</button>
+                <button class="secondary-btn wide">Create next action</button>
+                <button class="ghost-btn wide" data-screen-link="manager">Open manager view</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="screen-manager" class="screen">
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-label">Active defects</div>
+            <div class="metric-value">42</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Overdue next actions</div>
+            <div class="metric-value">8</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Stalled defects</div>
+            <div class="metric-value">5</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Unowned</div>
+            <div class="metric-value">3</div>
+          </div>
+        </div>
+
+        <div class="page-grid manager">
+          <div class="panel">
+            <div class="section-title">Workload by Accountable Owner</div>
+            <div class="owner-list">
+              <div class="owner-row"><span>Kim</span><span>12 defects · weight 26</span></div>
+              <div class="owner-row"><span>Lee</span><span>10 defects · weight 21</span></div>
+              <div class="owner-row"><span>Sam</span><span>7 defects · weight 14</span></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="section-title">Stalled Defects</div>
+            <div class="stack">
+              <button class="risk-item" data-screen-link="detail">
+                <div>
+                  <div class="risk-title">DEF-201 · Sync issue</div>
+                  <div class="muted small">Owner: Kim · Last movement 5d ago</div>
+                </div>
+                <span class="risk-badge risk-high">Stalled</span>
+              </button>
+              <button class="risk-item" data-screen-link="detail">
+                <div>
+                  <div class="risk-title">DEF-188 · Login timeout</div>
+                  <div class="muted small">Owner: — · Last movement 4d ago</div>
+                </div>
+                <span class="risk-badge risk-high">Unowned</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="panel full-width">
+            <div class="section-title">Overdue Next Actions</div>
+            <div class="stack">
+              <button class="risk-item" data-screen-link="detail">
+                <div>
+                  <div class="risk-title">DEF-111 · Capture logs</div>
+                  <div class="muted small">Owner: Lee · Due yesterday</div>
+                </div>
+                <span class="risk-badge risk-medium">Overdue</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer-note">
+        Prototype intent: product review, IA review, and interaction review before implementation.
+      </footer>
+    </main>
+  </div>
+
+  <script src="prototype/app.js"></script>
+</body>
+</html>

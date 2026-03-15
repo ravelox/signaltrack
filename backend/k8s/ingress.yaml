@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: signaltrack-backend
+  labels:
+    app.kubernetes.io/name: signaltrack-backend
+spec:
+  rules:
+    - host: signaltrack-backend.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: signaltrack-backend
+                port:
+                  number: 3000

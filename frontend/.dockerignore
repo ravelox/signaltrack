@@ -1,0 +1,15 @@
+node_modules
+.next
+pnpm-debug.log
+npm-debug.log
+.env.local
+.env.*.local
+Dockerfile
+docker-compose.yaml
+helm
+k8s
+README.md
+SCREEN_NOTES.md
+docs
+prototype
+tsconfig.tsbuildinfo

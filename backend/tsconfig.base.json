@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "@signaltrack/shared": ["packages/shared/src/index.ts"],
+      "@signaltrack/domain": ["packages/domain/src/index.ts"],
+      "@signaltrack/application": ["packages/application/src/index.ts"],
+      "@signaltrack/infrastructure": ["packages/infrastructure/src/index.ts"]
+    }
+  }
+}

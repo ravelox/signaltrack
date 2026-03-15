@@ -1,0 +1,35 @@
+replicaCount: 2
+
+image:
+  repository: signaltrack-frontend
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: signaltrack-frontend.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+env:
+  NEXT_PUBLIC_SIGNALTRACK_API_BASE_URL: "http://signaltrack-backend.default.svc.cluster.local:3000"
+  NEXT_PUBLIC_SIGNALTRACK_USE_MOCKS: "false"
+  NEXT_PUBLIC_SIGNALTRACK_USE_MOCK_AUTH: "false"
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi

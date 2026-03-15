@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: signaltrack-frontend
+  labels:
+    app.kubernetes.io/name: signaltrack-frontend
+spec:
+  rules:
+    - host: signaltrack-frontend.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: signaltrack-frontend
+                port:
+                  number: 80

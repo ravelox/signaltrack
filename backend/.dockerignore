@@ -1,0 +1,12 @@
+node_modules
+.turbo
+pnpm-debug.log
+npm-debug.log
+.env.local
+.env.*.local
+Dockerfile
+docker-compose.yaml
+helm
+k8s
+README.md
+docs
