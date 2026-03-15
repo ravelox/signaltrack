@@ -6,11 +6,11 @@ What this pass focuses on:
 - end-to-end transaction propagation using AsyncLocalStorage
 - consistent dual-status defect persistence in schema, repositories, services, and API routes
 - persisted OIDC state/nonce flow skeleton wired through begin/callback routes
-- stubbed session bootstrap route for frontend auth wiring
+- persisted local session auth with seeded default admin support
 - signed evidence upload initiation route and service
 - tighter route registration and dependency wiring
 - stronger integration tests for defects, next actions, ownership, reports, evidence, OIDC state, and transaction propagation
-- worker skeletons for stalled defect and overdue next action sweeps
+- long-running worker loop for stalled defect and overdue next action sweeps
 - operational docs and a final restore-context prompt
 - workspace typecheck restored with the infrastructure package surface present in-repo
 
@@ -40,9 +40,7 @@ cd backend
 docker compose up --build
 ```
 
-This builds the backend image, starts Postgres and MinIO, runs migrations, and then serves the API on `http://localhost:3000`.
-
-The same stack also starts the backend worker service.
+This builds the backend images, starts Postgres and MinIO, runs migrations, serves the API on `http://localhost:3000`, and starts the worker.
 
 Useful endpoints:
 

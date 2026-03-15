@@ -7,7 +7,7 @@ SignalTrack is a split frontend/backend workspace for tracking defects, ownershi
 
 ## Repository layout
 
-- `frontend/`: Next.js 15 application with React Query, auth/session bootstrap wiring, responsive workflows, and env-controlled mock fallback
+- `frontend/`: Next.js 15 application with React Query, live local sign-in/session flow, responsive workflows, and env-controlled mock fallback
 - `backend/`: pnpm/turborepo TypeScript workspace with Fastify API, worker process, domain/application/infrastructure packages, migrations, and tests
 - `CODEX_HANDOFF.md`: high-signal continuation brief
 - `PROJECT_STATE_SUMMARY.md`: current implementation snapshot
@@ -20,8 +20,8 @@ As of March 15, 2026:
 
 - `frontend/` dependencies are installed and `pnpm typecheck` passes
 - `backend/` workspace dependencies are installed and `pnpm typecheck` passes
-- frontend auth supports a real session/bootstrap path with mock fallback via env
-- backend includes a session endpoint stub, OIDC begin/callback skeleton, signed evidence upload initiation, and worker skeletons
+- frontend supports a live local sign-in flow with env-controlled mock fallback
+- backend includes persisted local sessions, a seeded default admin, signed evidence upload initiation, and a long-running worker process
 - several frontend workflows still depend on mock adapters or incomplete live backend routes
 
 This is not a finished production release. It is a coherent in-progress snapshot intended to be continued from the handoff documents above.
@@ -54,7 +54,6 @@ After bootstrap:
 
 ```bash
 cd backend && docker compose up -d
-cd backend && pnpm dev:api
 cd frontend && pnpm dev
 ```
 
@@ -70,19 +69,19 @@ cd backend
 pnpm install
 ```
 
-3. Start local infrastructure:
+3. Start the backend Docker stack:
 
 ```bash
 docker compose up -d
 ```
 
-4. Run the API:
+4. If you prefer running the API outside Docker:
 
 ```bash
 pnpm dev:api
 ```
 
-5. Run the worker in a separate shell if needed:
+5. If you prefer running the worker outside Docker:
 
 ```bash
 pnpm dev:worker

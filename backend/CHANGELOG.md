@@ -2,30 +2,25 @@
 
 All notable changes to the backend workspace will be documented in this file.
 
-## 2026-03-15
+## 0.1.0 - 2026-03-15
 
 ### Added
 
-- Fastify API workspace structure with `@signaltrack/api` and `@signaltrack/worker` applications
-- Domain, application, infrastructure, and shared packages wired into the backend workspace
-- AsyncLocalStorage-based transaction propagation across backend flows
-- Dual-status defect persistence carried through schema, repositories, services, and API routes
-- OIDC begin/callback skeleton with persisted state and nonce handling
-- Session bootstrap stub to support frontend auth wiring
-- Signed evidence upload initiation route and service
-- Worker skeletons for stalled defect and overdue next action sweeps
-- Docker assets for Postgres, MinIO, migrations, and local API startup
-- Helm and Kubernetes deployment assets
+- Local password-based auth with persisted Postgres-backed sessions
+- Seeded default admin user and organization created during migration
+- Signed-cookie session resolution for API requests
+- Dedicated Docker image targets for migrate, API, and worker services
 
 ### Changed
 
-- Route registration and dependency wiring were tightened across the backend app surface
-- Workspace typecheck was restored with the infrastructure package surface present in-repo
-- Integration coverage was expanded for defects, next actions, ownership, reports, evidence, OIDC state, and transaction propagation
+- Replaced the session bootstrap stub with working login, logout, and session endpoints
+- Updated the worker from a one-shot process to a long-running polling loop
+- Fixed backend Docker startup so API, worker, and migrations build the correct runtime targets
+- Corrected Docker/runtime package resolution for built workspace packages
 
 ### Known gaps
 
-- OIDC token exchange and durable authenticated session handling are still incomplete
+- OIDC token exchange is still incomplete even though local auth is now working
 - Some live read/update routes required by the frontend are still stubbed or not fully implemented
 - Notification delivery is not complete enough for production use
 - This workspace has been hardened, but it is not a verified production release

@@ -6,19 +6,15 @@ All notable changes to the frontend workspace will be documented in this file.
 
 ### Added
 
-- Next.js 15 application structure for SignalTrack workflows
-- Role-aware navigation, permission gating, and route guard patterns
-- App-level auth/session bootstrap path with env-controlled mock fallback
-- Admin audit page scaffold
-- Responsive table-to-card fallback patterns for smaller screens
-- Form error mapping patterns and supporting UX completion notes
-- Docker assets for local frontend container startup
+- Live sign-in form on the home page for local backend auth
+- Logout action in the authenticated sidebar
+- Next.js 15 application structure, role-aware navigation, admin audit scaffold, responsive table/card fallback, and form-error mapping are in place from the earlier frontend phase work
 
 ### Changed
 
-- Defect detail mutations now invalidate cached queries and apply optimistic updates where safe
-- Frontend integration flow now supports a real backend session/bootstrap path in addition to mocks
-- The current phase shifted from isolated screen work toward integration-ready application structure
+- Frontend auth now works with the backend local login/session/logout flow instead of only a session bootstrap stub
+- The default live-auth path now uses the seeded backend admin account when mocks are disabled
+- Defect detail mutations already invalidate cached queries and apply optimistic updates where safe
 
 ### Known gaps
 
