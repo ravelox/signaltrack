@@ -30,22 +30,27 @@ Primary backend assumptions:
 
 ### Frontend
 The frontend has completed its current structural phase. It already has:
-- UX/UI artifact bundle
-- clickable prototype pack
+- approved UX/UI direction reflected in the checked-in app and docs
 - Next.js starter scaffold
 - integration pass
 - design-system pass
 - forms and validation pass
-- remaining phase bundle with permissions, role-awareness, admin audit, and responsive queue patterns
+- permissions, role-awareness, admin audit scaffold, and responsive queue patterns
 - session/bootstrap auth path with env-controlled mock fallback
 - query invalidation and optimistic detail updates for core defect mutations
 
 ## Source of truth preference
-For the frontend, the highest-numbered artifact in `frontend/` is the source of truth for this phase:
-- `07_signaltrack_frontend_phase_remaining_artifacts.zip`
+Use the checked-in repository state as the source of truth for this phase.
 
-For the backend, use:
-- `backend/signaltrack_v1_hardening_pass.zip`
+For frontend implementation context, prefer:
+- `frontend/README.md`
+- `frontend/CHANGELOG.md`
+- `frontend/docs/`
+
+For backend implementation context, prefer:
+- `backend/README.md`
+- `backend/CHANGELOG.md`
+- `backend/docs/`
 
 ## What Codex should do next
 Build the next phase.

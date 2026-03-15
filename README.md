@@ -1,35 +1,221 @@
-# SignalTrack Codex Handoff Bundle
+# SignalTrack
 
-Use this bundle to continue the next phase of SignalTrack without rebuilding context from scratch.
+SignalTrack is a split frontend/backend workspace for tracking defects, ownership, evidence, audit activity, and follow-up actions. This repository currently serves two purposes:
 
-## What is included
-- the latest backend hardening artifact
-- the latest frontend phase-complete artifact chain
-- the latest restore prompts
-- a Codex handoff brief
-- a concrete next-phase build plan
-- a project map and expected source-of-truth order
-- checksums for the included files
+- the working application code in `frontend/` and `backend/`
+- the handoff artifacts at the repo root that describe current status and next-phase work
 
-## Recommended handoff order for Codex
-1. Read `CODEX_HANDOFF.md`
-2. Read `PROJECT_STATE_SUMMARY.md`
-3. Read `NEXT_PHASE_BUILD_PLAN.md`
-4. Read the restore prompts in `backend/` and `frontend/`
-5. Use the highest-numbered frontend artifact zip as the current UI source of truth
-6. Use the backend hardening artifact as the current backend source of truth unless newer backend work exists outside this bundle
+## Repository layout
 
-## Current focus
-- completing the remaining live backend integrations now that real session/bootstrap wiring exists
-- replacing mock adapters with live backend endpoints
-- expanding cache invalidation and optimistic updates beyond the current defect detail actions
-- admin audit filtering depth
-- accessibility and responsive refinement
-- end-to-end smoke-path completion
+- `frontend/`: Next.js 15 application with React Query, auth/session bootstrap wiring, responsive workflows, and env-controlled mock fallback
+- `backend/`: pnpm/turborepo TypeScript workspace with Fastify API, worker process, domain/application/infrastructure packages, migrations, and tests
+- `CODEX_HANDOFF.md`: high-signal continuation brief
+- `PROJECT_STATE_SUMMARY.md`: current implementation snapshot
+- `NEXT_PHASE_BUILD_PLAN.md`: prioritized next work
+- `SOURCE_OF_TRUTH_ORDER.md`: expected read order for handoff/restore work
 
-## Current repo status
-- frontend dependencies are installed and `pnpm typecheck` passes in `frontend/`
-- backend workspace dependencies are installed and `pnpm typecheck` passes in `backend/`
-- frontend auth now supports a real session/bootstrap path with mock fallback controlled by env
-- defect detail mutations now invalidate cached queries and apply optimistic updates where safe
-- backend now includes a session endpoint stub and the infrastructure package surface needed for workspace typecheck
+## Current status
+
+As of March 15, 2026:
+
+- `frontend/` dependencies are installed and `pnpm typecheck` passes
+- `backend/` workspace dependencies are installed and `pnpm typecheck` passes
+- frontend auth supports a real session/bootstrap path with mock fallback via env
+- backend includes a session endpoint stub, OIDC begin/callback skeleton, signed evidence upload initiation, and worker skeletons
+- several frontend workflows still depend on mock adapters or incomplete live backend routes
+
+This is not a finished production release. It is a coherent in-progress snapshot intended to be continued from the handoff documents above.
+
+## Local development
+
+### Prerequisites
+
+- Node.js 20+
+- `pnpm`
+- Docker Desktop or compatible Docker runtime for Postgres/MinIO
+
+### Bootstrap from repo root
+
+For a single root-level install path, run:
+
+```bash
+./bootstrap.sh
+```
+
+What it does:
+
+- creates `backend/.env` from [backend/.env.example](/Users/dkelly/Projects/signaltrack/backend/.env.example) if it does not already exist
+- creates `frontend/.env.local` from [frontend/.env.example](/Users/dkelly/Projects/signaltrack/frontend/.env.example) if it does not already exist
+- installs backend dependencies
+- installs frontend dependencies
+
+After bootstrap:
+
+```bash
+cd backend && docker compose up -d
+cd backend && pnpm dev:api
+cd frontend && pnpm dev
+```
+
+### Backend
+
+If you prefer to install manually instead of using `./bootstrap.sh`:
+
+1. Copy [backend/.env.example](/Users/dkelly/Projects/signaltrack/backend/.env.example) to `backend/.env` and adjust values as needed.
+2. Install dependencies:
+
+```bash
+cd backend
+pnpm install
+```
+
+3. Start local infrastructure:
+
+```bash
+docker compose up -d
+```
+
+4. Run the API:
+
+```bash
+pnpm dev:api
+```
+
+5. Run the worker in a separate shell if needed:
+
+```bash
+pnpm dev:worker
+```
+
+Useful backend commands:
+
+```bash
+pnpm typecheck
+pnpm test
+pnpm migrate
+pnpm build
+```
+
+The backend Docker stack exposes:
+
+- API: `http://localhost:3000`
+- Postgres: `localhost:5432`
+- MinIO API: `http://localhost:9000`
+- MinIO console: `http://localhost:9001`
+
+### Frontend
+
+If you prefer to install manually instead of using `./bootstrap.sh`:
+
+1. Copy [frontend/.env.example](/Users/dkelly/Projects/signaltrack/frontend/.env.example) to `frontend/.env.local`.
+2. Install dependencies:
+
+```bash
+cd frontend
+pnpm install
+```
+
+3. Start the app:
+
+```bash
+pnpm dev
+```
+
+Useful frontend commands:
+
+```bash
+pnpm typecheck
+pnpm build
+pnpm start
+```
+
+By default, the frontend env example points to `http://localhost:3000` and enables mocks with `NEXT_PUBLIC_SIGNALTRACK_USE_MOCKS=true`. Set that to `false` when testing against the live backend.
+
+## Docker
+
+Both sides include Docker assets:
+
+- [backend/docker-compose.yaml](/Users/dkelly/Projects/signaltrack/backend/docker-compose.yaml) starts Postgres, MinIO, migrations, and the backend API
+- [frontend/docker-compose.yaml](/Users/dkelly/Projects/signaltrack/frontend/docker-compose.yaml) serves the Next.js app on `http://localhost:3001`
+
+### Run backend under Docker
+
+From the backend workspace:
+
+```bash
+cd backend
+docker compose up --build
+```
+
+What this starts:
+
+- Postgres on `localhost:5432`
+- MinIO on `http://localhost:9000`
+- MinIO console on `http://localhost:9001`
+- migration job before API startup
+- backend API on `http://localhost:3000`
+
+Run detached if preferred:
+
+```bash
+cd backend
+docker compose up -d --build
+```
+
+Stop the backend stack:
+
+```bash
+cd backend
+docker compose down
+```
+
+### Run frontend under Docker
+
+Start the backend Docker stack first. The frontend container is configured to call the backend at `http://host.docker.internal:3000`, so the backend API must already be reachable on port `3000` on your host.
+
+From the frontend workspace:
+
+```bash
+cd frontend
+docker compose up --build
+```
+
+This serves the frontend at `http://localhost:3001`.
+
+Run detached if preferred:
+
+```bash
+cd frontend
+docker compose up -d --build
+```
+
+Stop the frontend container:
+
+```bash
+cd frontend
+docker compose down
+```
+
+### Full Docker startup order
+
+If you want both applications running under Docker:
+
+```bash
+cd backend && docker compose up -d --build
+cd frontend && docker compose up -d --build
+```
+
+Then open:
+
+- frontend: `http://localhost:3001`
+- backend API: `http://localhost:3000`
+- MinIO console: `http://localhost:9001`
+
+## Suggested read order
+
+If you are picking up development work rather than just running the app, start with:
+
+1. [CODEX_HANDOFF.md](/Users/dkelly/Projects/signaltrack/CODEX_HANDOFF.md)
+2. [PROJECT_STATE_SUMMARY.md](/Users/dkelly/Projects/signaltrack/PROJECT_STATE_SUMMARY.md)
+3. [NEXT_PHASE_BUILD_PLAN.md](/Users/dkelly/Projects/signaltrack/NEXT_PHASE_BUILD_PLAN.md)
+4. [SOURCE_OF_TRUTH_ORDER.md](/Users/dkelly/Projects/signaltrack/SOURCE_OF_TRUTH_ORDER.md)

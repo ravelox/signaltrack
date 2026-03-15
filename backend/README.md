@@ -21,3 +21,35 @@ What this still is not:
 - a fully implemented notification delivery system
 
 It is a substantially more coherent, better-integrated, production-shaped v1 codebase snapshot.
+
+## Run with Docker
+
+From [backend/docker-compose.yaml](/Users/dkelly/Projects/signaltrack/backend/docker-compose.yaml):
+
+```bash
+cd backend
+docker compose up --build
+```
+
+This builds the backend image, starts Postgres and MinIO, runs migrations, and then serves the API on `http://localhost:3000`.
+
+Useful endpoints:
+
+- API: `http://localhost:3000`
+- Postgres: `localhost:5432`
+- MinIO API: `http://localhost:9000`
+- MinIO console: `http://localhost:9001`
+
+For detached startup:
+
+```bash
+cd backend
+docker compose up -d --build
+```
+
+To stop the stack:
+
+```bash
+cd backend
+docker compose down
+```
