@@ -63,6 +63,7 @@ export const registerDefectRoutes = async (app: FastifyInstance) => {
       const rows = await db<{
         id: string;
         key: string;
+        openedAt: string;
         externalSummary: string;
         reporterStatus: string;
         internalStatus: string;
@@ -73,6 +74,7 @@ export const registerDefectRoutes = async (app: FastifyInstance) => {
         SELECT
           defects.id,
           defects.defect_key AS key,
+          to_char(defects.created_at, 'YYYY-MM-DD HH24:MI') AS "openedAt",
           defects.external_summary AS "externalSummary",
           defects.reporter_status AS "reporterStatus",
           defects.internal_status AS "internalStatus",
@@ -99,6 +101,7 @@ export const registerDefectRoutes = async (app: FastifyInstance) => {
         .map((row) => ({
           id: row.id,
           key: row.key,
+          openedAt: row.openedAt,
           externalSummary: row.externalSummary,
           reporterStatus: row.reporterStatus,
           internalStatus: row.internalStatus,
@@ -122,6 +125,7 @@ export const registerDefectRoutes = async (app: FastifyInstance) => {
       const [defect] = await db<{
         id: string;
         key: string;
+        openedAt: string;
         externalSummary: string;
         reporterStatus: string;
         internalStatus: string;
@@ -137,6 +141,7 @@ export const registerDefectRoutes = async (app: FastifyInstance) => {
         SELECT
           defects.id,
           defects.defect_key AS key,
+          to_char(defects.created_at, 'YYYY-MM-DD HH24:MI') AS "openedAt",
           defects.external_summary AS "externalSummary",
           defects.reporter_status AS "reporterStatus",
           defects.internal_status AS "internalStatus",

@@ -88,7 +88,7 @@ export default function ReportsPage() {
             <div className="overflow-x-auto">
               <div className="min-w-[980px]">
                 <div className="grid grid-cols-[160px_150px_130px_1.8fr_150px_120px] gap-3 border-b border-line px-4 py-4 text-xs font-bold uppercase tracking-[0.12em] text-muted">
-                  <div>Submitted</div>
+                  <div>Opened</div>
                   <div>Reporter</div>
                   <div>Impact</div>
                   <div>Description</div>

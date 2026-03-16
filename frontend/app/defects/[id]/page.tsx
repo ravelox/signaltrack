@@ -101,6 +101,7 @@ export default function DefectDetailPage({ params }: { params: Promise<{ id: str
               <SectionHeader title="Work State" />
               <div className="mt-4 space-y-3 text-sm">
                 {[
+                  ["Opened", defect.openedAt],
                   ["Accountable owner", defect.owner],
                   ["Current next action", defect.nextAction],
                   ["Severity", String(defect.severity)],

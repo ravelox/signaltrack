@@ -14,6 +14,7 @@ export type AuditEvent = {
 export type DefectListRow = {
   id: string;
   key: string;
+  openedAt: string;
   externalSummary: string;
   reporterStatus: string;
   internalStatus: string;
@@ -26,6 +27,7 @@ export type DefectListRow = {
 export type DefectDetail = {
   id: string;
   key: string;
+  openedAt: string;
   externalSummary: string;
   reporterStatus: string;
   internalStatus: string;

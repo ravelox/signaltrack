@@ -80,7 +80,7 @@ export default function ReportDetailPage({ params }: { params: Promise<{ id: str
               <SectionHeader title="Submission metadata" />
               <div className="mt-4 space-y-3 text-sm">
                 {[
-                  ["Submitted", report.submittedAt],
+                  ["Opened", report.submittedAt],
                   ["Reporter", report.reporter],
                   ["Reporter type", report.reporterType],
                   ["Impact", report.impactLevel.replaceAll("_", " ")],

@@ -9,6 +9,7 @@ export function DefectCard({ defect }: { defect: DefectListRow }) {
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="font-semibold">{defect.key}</div>
+          <div className="mt-1 text-xs text-muted">Opened {defect.openedAt}</div>
           <div className="mt-1 text-sm">{defect.externalSummary}</div>
         </div>
         <RiskBadge kind={defect.riskKind}>{defect.riskLabel}</RiskBadge>

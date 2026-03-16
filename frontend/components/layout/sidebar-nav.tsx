@@ -22,6 +22,25 @@ export function SidebarNav() {
   const router = useRouter();
   const { user, isLoading, isSigningOut, logout } = useAuthState();
 
+  if (isSigningOut) {
+    return (
+      <aside className="hidden bg-slate-900 px-5 py-6 text-slate-200 lg:block">
+        <div className="flex items-center gap-3">
+          <div className="grid h-10 w-10 place-items-center rounded-xl bg-blue-600 font-bold text-white">S</div>
+          <div>
+            <div className="font-semibold">SignalTrack</div>
+            <div className="text-xs text-slate-400">Phase Bundle {appVersion}</div>
+          </div>
+        </div>
+
+        <div className="mt-6 rounded-2xl border border-white/10 p-4 text-sm text-slate-300">
+          <div className="font-semibold text-slate-100">Signing out</div>
+          <div className="mt-1">Ending your session.</div>
+        </div>
+      </aside>
+    );
+  }
+
   if (isLoading || !user) {
     return (
       <aside className="hidden bg-slate-900 px-5 py-6 text-slate-200 lg:block">
@@ -40,7 +59,7 @@ export function SidebarNav() {
 
   const handleLogout = async () => {
     await logout();
-    router.replace("/?signed_out=1");
+    window.location.assign("/?signed_out=1");
   };
 
   return (
