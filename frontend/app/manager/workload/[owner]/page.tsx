@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { use } from "react";
 import { Guard } from "@/components/auth/guard";
+import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { PageHeader } from "@/components/layout/page-header";
 import { Panel } from "@/components/ui/panel";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -30,6 +31,13 @@ export default function ManagerOwnerWorkloadPage({
   return (
     <Guard allow={["engineering_manager", "org_admin"]}>
       <div className="space-y-6">
+        <Breadcrumbs
+          items={[
+            { label: "Manager", href: "/manager" },
+            { label: "Workload" },
+            { label: ownerName }
+          ]}
+        />
         <PageHeader
           eyebrow="Manager workflow"
           title={ownerName}

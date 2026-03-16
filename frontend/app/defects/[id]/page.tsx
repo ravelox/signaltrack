@@ -2,6 +2,7 @@
 
 import { use } from "react";
 import { useState } from "react";
+import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { PageHeader } from "@/components/layout/page-header";
 import { Panel } from "@/components/ui/panel";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -43,6 +44,7 @@ export default function DefectDetailPage({ params }: { params: Promise<{ id: str
   return (
     <Guard allow={["engineer", "engineering_manager", "org_admin"]}>
       <div className="space-y-6">
+        <Breadcrumbs items={[{ label: "Defects", href: "/defects" }, { label: defect.key }]} />
         <PageHeader
           eyebrow={defect.key}
           title={defect.externalSummary}

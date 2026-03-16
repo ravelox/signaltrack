@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { use } from "react";
 import { Guard } from "@/components/auth/guard";
+import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { DetailSkeleton } from "@/components/states/skeletons";
 import { ErrorPanel } from "@/components/states/error-panel";
 import { PageHeader } from "@/components/layout/page-header";
@@ -25,6 +26,7 @@ export default function ReportDetailPage({ params }: { params: Promise<{ id: str
   return (
     <Guard allow={["engineer", "engineering_manager", "org_admin"]}>
       <div className="space-y-6">
+        <Breadcrumbs items={[{ label: "Reported Issues", href: "/reports" }, { label: report.id.slice(0, 8) }]} />
         <PageHeader
           eyebrow={`Reported issue ${report.id.slice(0, 8)}`}
           title={report.rawDescription}

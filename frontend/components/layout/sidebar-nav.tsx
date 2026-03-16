@@ -59,7 +59,7 @@ export function SidebarNav() {
 
   const handleLogout = async () => {
     await logout();
-    window.location.assign("/?signed_out=1");
+    window.location.assign("/signed-out");
   };
 
   return (

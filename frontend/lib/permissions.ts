@@ -13,6 +13,7 @@ export function hasAnyRole(userRoles: AppRole[], allowed: AppRole[]): boolean {
 
 export const routePermissions = {
   "/": ["reporter", "engineer", "engineering_manager", "org_admin"],
+  "/signed-out": ["reporter", "engineer", "engineering_manager", "org_admin"],
   "/report": ["reporter", "engineer", "engineering_manager", "org_admin"],
   "/report/submitted": ["reporter", "engineer", "engineering_manager", "org_admin"],
   "/reports": ["engineer", "engineering_manager", "org_admin"],
