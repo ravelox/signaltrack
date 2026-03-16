@@ -9,9 +9,13 @@ export const env = {
   DEFAULT_ADMIN_EMAIL: process.env.DEFAULT_ADMIN_EMAIL ?? "admin@signaltrack.local",
   DEFAULT_ADMIN_PASSWORD: process.env.DEFAULT_ADMIN_PASSWORD ?? "change-me-admin",
   DEFAULT_ADMIN_DISPLAY_NAME: process.env.DEFAULT_ADMIN_DISPLAY_NAME ?? "SignalTrack Admin",
+  STALL_THRESHOLD_HOURS: Number(process.env.STALL_THRESHOLD_HOURS ?? 72),
   AWS_REGION: process.env.AWS_REGION ?? "us-east-1",
   S3_BUCKET: process.env.S3_BUCKET ?? "signaltrack-local",
   S3_ENDPOINT: process.env.S3_ENDPOINT,
+  S3_PUBLIC_ENDPOINT: process.env.S3_PUBLIC_ENDPOINT ?? process.env.S3_ENDPOINT,
+  S3_ACCESS_KEY_ID: process.env.S3_ACCESS_KEY_ID,
+  S3_SECRET_ACCESS_KEY: process.env.S3_SECRET_ACCESS_KEY,
   S3_FORCE_PATH_STYLE: (process.env.S3_FORCE_PATH_STYLE ?? "true") === "true",
   SIGNED_URL_TTL_SECONDS: Number(process.env.SIGNED_URL_TTL_SECONDS ?? 900)
 };

@@ -8,8 +8,8 @@ Included:
 - route guard patterns
 - server-error mapping patterns for forms
 - responsive table/card fallback pattern
-- admin audit page scaffold
-- app-level live sign-in flow with env-controlled mock fallback
+- live admin audit review page
+- app-level live sign-in flow backed by the backend session API
 - optimistic defect detail mutation updates and cache invalidation
 - UX completion notes for this phase
 - final restore prompt for continuing the next frontend phase
@@ -18,7 +18,7 @@ This bundle is intended to close out the current frontend phase by rounding out 
 
 ## Local auth
 
-When `NEXT_PUBLIC_SIGNALTRACK_USE_MOCK_AUTH=false`, the home page uses the live backend login/session flow and sign-in form.
+The home page uses the live backend login/session flow and sign-in form.
 
 With the default backend seed values:
 

@@ -23,8 +23,6 @@ ingress:
 
 env:
   NEXT_PUBLIC_SIGNALTRACK_API_BASE_URL: "http://signaltrack-backend.default.svc.cluster.local:3000"
-  NEXT_PUBLIC_SIGNALTRACK_USE_MOCKS: "false"
-  NEXT_PUBLIC_SIGNALTRACK_USE_MOCK_AUTH: "false"
 
 resources:
   requests:

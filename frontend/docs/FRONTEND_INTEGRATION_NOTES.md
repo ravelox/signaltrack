@@ -5,16 +5,16 @@
 - feature-specific API modules
 - React Query setup
 - page-level hooks
-- fallback mock adapter controlled by env
-- real session/bootstrap auth path with env-controlled mock fallback
+- live backend data integration across defects, reports, manager, and admin flows
+- real login/session/logout auth path
 - defect detail mutation invalidation and optimistic updates
 
-## Intended migration path
-1. leave `NEXT_PUBLIC_SIGNALTRACK_USE_MOCKS=true` while backend endpoints stabilize
-2. use `NEXT_PUBLIC_SIGNALTRACK_USE_MOCK_AUTH=false` when testing the real session/bootstrap path
-3. switch a single feature to live data by changing the client implementation
-4. verify states for loading / success / error
-5. repeat for the next feature
+## Current integration state
+1. defects list and detail use live backend endpoints
+2. report submission and evidence upload use live backend/object-storage flows
+3. manager overview and admin audit use live backend endpoints
+4. auth uses the backend local login/session/logout flow
+5. loading, success, and error states are wired through the feature hooks
 
 ## Recommended order
 1. defects list

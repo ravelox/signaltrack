@@ -25,7 +25,7 @@ export function DefectTable({ defects }: { defects: DefectListRow[] }) {
             {defects.map((defect) => (
               <Link
                 key={defect.key}
-                href={`/defects/${defect.key}`}
+                href={`/defects/${defect.id}`}
                 className="grid grid-cols-[100px_2fr_1.15fr_1.2fr_100px_1.3fr_110px] gap-3 border-b border-line px-4 py-4 text-sm hover:bg-slate-50"
               >
                 <div className="font-semibold">{defect.key}</div>

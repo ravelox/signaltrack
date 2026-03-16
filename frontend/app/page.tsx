@@ -32,7 +32,7 @@ export default function HomePage() {
         description={
           user
             ? "This bundle closes out the current frontend phase with permissions, role awareness, admin audit, and responsive queue patterns."
-            : "Sign in with the seeded local admin account to use the live backend without mocks."
+            : "Sign in with the seeded local admin account to use the live backend."
         }
       />
 

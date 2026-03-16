@@ -6,5 +6,3 @@ metadata:
     {{- include "signaltrack-frontend.labels" . | nindent 4 }}
 data:
   NEXT_PUBLIC_SIGNALTRACK_API_BASE_URL: {{ .Values.env.NEXT_PUBLIC_SIGNALTRACK_API_BASE_URL | quote }}
-  NEXT_PUBLIC_SIGNALTRACK_USE_MOCKS: {{ .Values.env.NEXT_PUBLIC_SIGNALTRACK_USE_MOCKS | quote }}
-  NEXT_PUBLIC_SIGNALTRACK_USE_MOCK_AUTH: {{ .Values.env.NEXT_PUBLIC_SIGNALTRACK_USE_MOCK_AUTH | quote }}

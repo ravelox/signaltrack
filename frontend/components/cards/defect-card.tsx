@@ -5,7 +5,7 @@ import type { DefectListRow } from "@/lib/types";
 
 export function DefectCard({ defect }: { defect: DefectListRow }) {
   return (
-    <Link href={`/defects/${defect.key}`} className="block rounded-2xl border border-line bg-white p-4 shadow-soft">
+    <Link href={`/defects/${defect.id}`} className="block rounded-2xl border border-line bg-white p-4 shadow-soft">
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="font-semibold">{defect.key}</div>

@@ -8,17 +8,13 @@
 - separation between page files and feature/UI building blocks
 
 ## What still needs to happen
-- connect to real backend APIs
-- expand auth/session handling beyond the current bootstrap/session stub
 - deepen form/server error handling
 - add loading, empty, and error states consistently across all routes
-- replace remaining mock data with query-driven data fetching
-- complete live manager and admin data wiring
+- continue hardening worker-backed notifications and broader backend coverage
+- expand automated test coverage around the live workflows
 
 ## Suggested next coding steps
-1. create a typed API client layer
-2. wire defects list to live backend data
-3. wire defect detail to live backend data
-4. wire report submission flow
-5. wire evidence upload URL handshake
-6. add manager page data fetching
+1. add end-to-end coverage for login, reporting, and defect triage
+2. persist richer report attachment metadata where needed
+3. broaden admin filtering to server-side query params if result volume grows
+4. harden notification/worker jobs beyond their current skeleton state

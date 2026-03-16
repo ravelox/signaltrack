@@ -1,8 +1,11 @@
 import type { FastifyInstance } from "fastify";
 import { env, LocalAuthStore } from "@signaltrack/infrastructure";
+import { registerAdminRoutes } from "../routes/admin.js";
 import { registerAuthRoutes } from "../routes/auth.js";
 import { registerDefectRoutes } from "../routes/defects.js";
 import { registerEvidenceRoutes } from "../routes/evidence.js";
+import { registerManagerRoutes } from "../routes/manager.js";
+import { registerReportRoutes } from "../routes/reports.js";
 
 export const registerRoutes = async (app: FastifyInstance) => {
   const authStore = new LocalAuthStore();
@@ -24,4 +27,7 @@ export const registerRoutes = async (app: FastifyInstance) => {
   await registerAuthRoutes(app);
   await registerDefectRoutes(app);
   await registerEvidenceRoutes(app);
+  await registerReportRoutes(app);
+  await registerManagerRoutes(app);
+  await registerAdminRoutes(app);
 };

@@ -66,6 +66,14 @@ export type CreateReportInput = {
 
 export type CreatedReport = { id: string };
 export type EvidenceUploadUrlResponse = { url: string };
+export type CreateDefectInput = {
+  externalSummary: string;
+  internalSummary: string;
+  severity: number;
+  urgency: number;
+  evidenceGap: number;
+};
+export type CreatedDefect = { id: string; key: string };
 export type ChangeOwnerInput = { defectId: string; userId: string; userLabel?: string };
 export type CreateNextActionInput = {
   defectId: string;

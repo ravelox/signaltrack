@@ -6,8 +6,15 @@ import { env } from "../env.js";
 export class S3SignedUrlProvider implements SignedUrlProvider {
   private readonly client = new S3Client({
     region: env.AWS_REGION,
-    endpoint: env.S3_ENDPOINT,
-    forcePathStyle: env.S3_FORCE_PATH_STYLE
+    endpoint: env.S3_PUBLIC_ENDPOINT,
+    forcePathStyle: env.S3_FORCE_PATH_STYLE,
+    credentials:
+      env.S3_ACCESS_KEY_ID && env.S3_SECRET_ACCESS_KEY
+        ? {
+            accessKeyId: env.S3_ACCESS_KEY_ID,
+            secretAccessKey: env.S3_SECRET_ACCESS_KEY
+          }
+        : undefined
   });
 
   public async createDownloadUrl(objectKey: string, ttlSeconds: number): Promise<string> {

@@ -5,8 +5,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AppRole, CurrentUser } from "@/lib/auth/types";
 import type { LoginInput } from "@/lib/types";
 import { signalTrackClient } from "@/lib/api/client";
-import { mockCurrentUser } from "@/lib/auth/mock-user";
-import { frontendEnv } from "@/lib/env";
 
 type AuthContextValue = {
   user: CurrentUser | null;
@@ -16,8 +14,8 @@ type AuthContextValue = {
 };
 
 const AuthContext = createContext<AuthContextValue>({
-  user: frontendEnv.useMockAuth ? mockCurrentUser : null,
-  isLoading: !frontendEnv.useMockAuth,
+  user: null,
+  isLoading: true,
   login: async () => undefined,
   logout: async () => undefined
 });
@@ -27,12 +25,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const sessionQuery = useQuery({
     queryKey: ["auth", "session"],
     queryFn: signalTrackClient.getAuthSession,
-    enabled: !frontendEnv.useMockAuth,
     staleTime: 60_000,
     retry: 1
   });
 
-  const user = frontendEnv.useMockAuth ? mockCurrentUser : (sessionQuery.data?.user ?? null);
+  const user = sessionQuery.data?.user ?? null;
 
   const loginMutation = useMutation({
     mutationFn: async (input: LoginInput) => signalTrackClient.login(input),
@@ -54,7 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
-        isLoading: frontendEnv.useMockAuth ? false : (sessionQuery.isLoading || loginMutation.isPending || logoutMutation.isPending),
+        isLoading: sessionQuery.isLoading || loginMutation.isPending || logoutMutation.isPending,
         login: async (input) => {
           await loginMutation.mutateAsync(input);
         },

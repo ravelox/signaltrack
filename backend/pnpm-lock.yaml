@@ -26,6 +26,9 @@ importers:
       '@signaltrack/application':
         specifier: workspace:*
         version: link:../../packages/application
+      '@signaltrack/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
       '@signaltrack/infrastructure':
         specifier: workspace:*
         version: link:../../packages/infrastructure
