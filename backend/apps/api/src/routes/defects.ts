@@ -161,9 +161,10 @@ export const registerDefectRoutes = async (app: FastifyInstance) => {
       }
 
       const [evidence, timeline, linkedReportRows, ownerOptions] = await Promise.all([
-        db<{ name: string; meta: string }[]>`
+        db<{ name: string; meta: string; objectKey: string }[]>`
           SELECT
             COALESCE(summary, object_storage_key) AS name,
+            object_storage_key AS "objectKey",
             to_char(evidence_items.created_at, 'YYYY-MM-DD HH24:MI') AS meta
           FROM evidence_items
           WHERE evidence_items.defect_id = ${params.defectId}::uuid

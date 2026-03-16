@@ -26,6 +26,7 @@ export const registerAdminRoutes = async (app: FastifyInstance) => {
         entityType: string;
         entityId: string | null;
         summary: string;
+        href: string | null;
       }[]>`
         SELECT
           audit_events.id,
@@ -35,11 +36,23 @@ export const registerAdminRoutes = async (app: FastifyInstance) => {
           audit_events.entity_type AS "entityType",
           audit_events.entity_id AS "entityId",
           CASE
+            WHEN audit_events.entity_type = 'defect' AND audit_events.entity_id IS NOT NULL THEN '/defects/' || audit_events.entity_id::text
+            WHEN audit_events.entity_type = 'next_action' AND next_actions.defect_id IS NOT NULL THEN '/defects/' || next_actions.defect_id::text
+            WHEN audit_events.entity_type = 'report' AND reports.defect_id IS NOT NULL THEN '/defects/' || reports.defect_id::text
+            ELSE NULL
+          END AS href,
+          CASE
             WHEN audit_events.metadata ? 'summary' THEN audit_events.metadata->>'summary'
             ELSE replace(audit_events.event_type, '.', ' ')
           END AS summary
         FROM audit_events
         LEFT JOIN users ON users.id = audit_events.actor_user_id
+        LEFT JOIN next_actions
+          ON audit_events.entity_type = 'next_action'
+          AND next_actions.id = audit_events.entity_id
+        LEFT JOIN reports
+          ON audit_events.entity_type = 'report'
+          AND reports.id = audit_events.entity_id
         WHERE audit_events.org_id = ${request.currentUser!.orgId}::uuid
           AND (${query.eventType ?? null}::text IS NULL OR audit_events.event_type = ${query.eventType ?? null})
           AND (${query.entityType ?? null}::text IS NULL OR audit_events.entity_type = ${query.entityType ?? null})

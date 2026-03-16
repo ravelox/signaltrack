@@ -15,6 +15,7 @@ export const routePermissions = {
   "/": ["reporter", "engineer", "engineering_manager", "org_admin"],
   "/report": ["reporter", "engineer", "engineering_manager", "org_admin"],
   "/report/submitted": ["reporter", "engineer", "engineering_manager", "org_admin"],
+  "/reports": ["engineer", "engineering_manager", "org_admin"],
   "/defects": ["engineer", "engineering_manager", "org_admin"],
   "/defects/new": ["engineer", "engineering_manager", "org_admin"],
   "/manager": ["engineering_manager", "org_admin"],

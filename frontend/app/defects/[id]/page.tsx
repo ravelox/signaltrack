@@ -1,6 +1,7 @@
 "use client";
 
 import { use } from "react";
+import { useState } from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Panel } from "@/components/ui/panel";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -13,17 +14,31 @@ import { useDefectDetail } from "@/features/defects/hooks/use-defect-detail";
 import { ChangeOwnerForm } from "@/features/defects/components/change-owner-form";
 import { CreateNextActionForm } from "@/features/defects/components/create-next-action-form";
 import { UpdateStatusesForm } from "@/features/defects/components/update-statuses-form";
+import { useEvidenceDownloadUrl } from "@/features/evidence/hooks/use-evidence-download-url";
 import { Guard } from "@/components/auth/guard";
 import { Can } from "@/components/auth/can";
 
 export default function DefectDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const query = useDefectDetail(id);
+  const downloadEvidence = useEvidenceDownloadUrl();
+  const [evidenceError, setEvidenceError] = useState("");
 
   if (query.isLoading) return <DetailSkeleton />;
   if (query.isError || !query.data) return <ErrorPanel />;
 
   const defect = query.data;
+
+  const openEvidence = async (objectKey: string) => {
+    setEvidenceError("");
+
+    try {
+      const { url } = await downloadEvidence.mutateAsync(objectKey);
+      window.open(url, "_blank", "noopener,noreferrer");
+    } catch {
+      setEvidenceError("Opening evidence failed.");
+    }
+  };
 
   return (
     <Guard allow={["engineer", "engineering_manager", "org_admin"]}>
@@ -64,9 +79,10 @@ export default function DefectDetailPage({ params }: { params: Promise<{ id: str
                 <SectionHeader title="Evidence" />
                 <div className="mt-4 space-y-3">
                   {defect.evidence.map((item) => (
-                    <EvidenceCard key={item.name} name={item.name} meta={item.meta} />
+                    <EvidenceCard key={item.objectKey} name={item.name} meta={item.meta} onClick={() => openEvidence(item.objectKey)} />
                   ))}
                 </div>
+                {evidenceError ? <div className="mt-3 text-sm text-red-700">{evidenceError}</div> : null}
               </Panel>
 
               <Panel className="p-6">

@@ -29,32 +29,82 @@ export const registerManagerRoutes = async (app: FastifyInstance) => {
       WHERE org_id = ${orgId}::uuid
     `;
 
-    const workload = await db<{ owner: string; defects: number; weight: number }[]>`
+    const workloadRows = await db<{
+      owner: string;
+      defectCount: number;
+      weight: number;
+    }[]>`
       SELECT
         COALESCE(users.display_name, users.email, 'Unowned') AS owner,
-        count(defects.id)::int AS defects,
+        count(defects.id)::int AS "defectCount",
         COALESCE(sum(defects.severity + defects.urgency + defects.evidence_gap), 0)::int AS weight
       FROM defects
       LEFT JOIN users ON users.id = defects.current_accountable_owner_id
       WHERE defects.org_id = ${orgId}::uuid
       GROUP BY COALESCE(users.display_name, users.email, 'Unowned')
-      ORDER BY defects DESC, weight DESC, owner ASC
+      ORDER BY "defectCount" DESC, weight DESC, owner ASC
       LIMIT 20
     `;
 
+    const workloadItems = await db<{
+      owner: string;
+      id: string;
+      key: string;
+      title: string;
+      reporterStatus: string;
+      internalStatus: string;
+      riskKind: "high" | "medium" | "low";
+      riskLabel: string;
+      href: string;
+    }[]>`
+      SELECT
+        COALESCE(users.display_name, users.email, 'Unowned') AS owner,
+        defects.id,
+        defects.defect_key AS key,
+        defects.external_summary AS title,
+        defects.reporter_status AS "reporterStatus",
+        defects.internal_status AS "internalStatus",
+        CASE
+          WHEN defects.severity + defects.urgency + defects.evidence_gap >= 8 THEN 'high'
+          WHEN defects.severity + defects.urgency + defects.evidence_gap >= 5 THEN 'medium'
+          ELSE 'low'
+        END AS "riskKind",
+        CASE
+          WHEN defects.severity + defects.urgency + defects.evidence_gap >= 8 THEN 'High risk'
+          WHEN defects.severity + defects.urgency + defects.evidence_gap >= 5 THEN 'Needs attention'
+          ELSE 'Stable'
+        END AS "riskLabel",
+        '/defects/' || defects.id::text AS href
+      FROM defects
+      LEFT JOIN users ON users.id = defects.current_accountable_owner_id
+      WHERE defects.org_id = ${orgId}::uuid
+      ORDER BY owner ASC, defects.updated_at DESC, defects.created_at DESC
+    `;
+
+    const workload = workloadRows.map((row) => ({
+      owner: row.owner,
+      defects: row.defectCount,
+      weight: row.weight,
+      items: workloadItems.filter((item) => item.owner === row.owner)
+    }));
+
     const stalled = await db<{
+      id: string;
       key: string;
       title: string;
       owner: string;
       lastMove: string;
+      href: string;
       badgeKind: "high" | "medium" | "low";
       badgeLabel: string;
     }[]>`
       SELECT
+        defects.id,
         defects.defect_key AS key,
         defects.external_summary AS title,
         COALESCE(users.display_name, users.email, 'Unowned') AS owner,
         to_char(defects.last_meaningful_activity_at, 'YYYY-MM-DD HH24:MI') AS "lastMove",
+        '/defects/' || defects.id::text AS href,
         CASE
           WHEN defects.severity + defects.urgency + defects.evidence_gap >= 8 THEN 'high'
           WHEN defects.severity + defects.urgency + defects.evidence_gap >= 5 THEN 'medium'

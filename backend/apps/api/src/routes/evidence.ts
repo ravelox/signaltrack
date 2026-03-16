@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
-import { CreateEvidenceService, CreateEvidenceUploadUrlService } from "@signaltrack/application";
+import { CreateEvidenceDownloadUrlService, CreateEvidenceService, CreateEvidenceUploadUrlService } from "@signaltrack/application";
 import { PostgresAuditStore, PostgresDefectStore, PostgresEvidenceStore, PostgresUnitOfWork, S3SignedUrlProvider, env } from "@signaltrack/infrastructure";
 import { requireRole } from "../middlewares/requireRole.js";
 import { mapError } from "../errors/mapError.js";
@@ -12,7 +12,24 @@ export const registerEvidenceRoutes = async (app: FastifyInstance) => {
     new PostgresAuditStore(),
     new PostgresUnitOfWork()
   );
+  const downloadUrlService = new CreateEvidenceDownloadUrlService(new S3SignedUrlProvider());
   const uploadUrlService = new CreateEvidenceUploadUrlService(new S3SignedUrlProvider());
+
+  app.get("/v1/evidence/download-url", { preHandler: [requireRole(["engineer", "engineering_manager", "org_admin"])] }, async (request, reply) => {
+    try {
+      const query = z.object({
+        objectKey: z.string().min(1)
+      }).parse(request.query);
+
+      return await downloadUrlService.execute({
+        objectKey: query.objectKey,
+        ttlSeconds: env.SIGNED_URL_TTL_SECONDS
+      });
+    } catch (error) {
+      const mapped = mapError(error);
+      return reply.code(mapped.statusCode).send(mapped.body);
+    }
+  });
 
   app.post("/v1/evidence/upload-url", { preHandler: [requireRole(["engineer", "engineering_manager", "org_admin"])] }, async (request, reply) => {
     try {

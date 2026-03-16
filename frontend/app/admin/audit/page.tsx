@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useDeferredValue, useState } from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Guard } from "@/components/auth/guard";
@@ -75,14 +76,29 @@ export default function AdminAuditPage() {
                   <div>Summary</div>
                 </div>
                 {events.map((event) => (
-                  <div key={event.id} className="grid grid-cols-[180px_160px_180px_120px_120px_1fr] gap-3 border-b border-line px-4 py-4 text-sm">
-                    <div>{event.at}</div>
-                    <div>{event.actor}</div>
-                    <div>{event.eventType}</div>
-                    <div>{event.entityType}</div>
-                    <div>{event.entityId}</div>
-                    <div>{event.summary}</div>
-                  </div>
+                  event.href ? (
+                    <Link
+                      key={event.id}
+                      href={event.href}
+                      className="grid grid-cols-[180px_160px_180px_120px_120px_1fr] gap-3 border-b border-line px-4 py-4 text-sm transition hover:bg-slate-50"
+                    >
+                      <div>{event.at}</div>
+                      <div>{event.actor}</div>
+                      <div>{event.eventType}</div>
+                      <div>{event.entityType}</div>
+                      <div>{event.entityId}</div>
+                      <div>{event.summary}</div>
+                    </Link>
+                  ) : (
+                    <div key={event.id} className="grid grid-cols-[180px_160px_180px_120px_120px_1fr] gap-3 border-b border-line px-4 py-4 text-sm">
+                      <div>{event.at}</div>
+                      <div>{event.actor}</div>
+                      <div>{event.eventType}</div>
+                      <div>{event.entityType}</div>
+                      <div>{event.entityId}</div>
+                      <div>{event.summary}</div>
+                    </div>
+                  )
                 ))}
                 {events.length === 0 ? (
                   <div className="px-4 py-6 text-sm text-muted">No audit events match the current filters.</div>

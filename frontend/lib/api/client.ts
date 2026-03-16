@@ -12,8 +12,11 @@ import type {
   CreatedReport,
   DefectDetail,
   DefectListRow,
+  EvidenceDownloadUrlResponse,
   EvidenceUploadUrlResponse,
   ManagerOverview,
+  ReportDetail,
+  ReportListItem,
   UpdateStatusesInput
 } from "@/lib/types";
 
@@ -40,11 +43,21 @@ export const signalTrackClient = {
   async createReport(input: CreateReportInput): Promise<CreatedReport> {
     return apiFetch<CreatedReport>("/v1/reports", { method: "POST", body: JSON.stringify(input) });
   },
+  async listReports(): Promise<ReportListItem[]> {
+    const data = await apiFetch<{ items: ReportListItem[] }>("/v1/reports");
+    return data.items;
+  },
+  async getReportDetail(id: string): Promise<ReportDetail> {
+    return apiFetch<ReportDetail>(`/v1/reports/${encodeURIComponent(id)}`);
+  },
   async createEvidenceUploadUrl(objectKey: string, contentType?: string): Promise<EvidenceUploadUrlResponse> {
     return apiFetch<EvidenceUploadUrlResponse>("/v1/evidence/upload-url", {
       method: "POST",
       body: JSON.stringify({ objectKey, contentType })
     });
+  },
+  async createEvidenceDownloadUrl(objectKey: string): Promise<EvidenceDownloadUrlResponse> {
+    return apiFetch<EvidenceDownloadUrlResponse>(`/v1/evidence/download-url?objectKey=${encodeURIComponent(objectKey)}`);
   },
   async getManagerOverview(): Promise<ManagerOverview> {
     return apiFetch<ManagerOverview>("/v1/manager/dashboard");

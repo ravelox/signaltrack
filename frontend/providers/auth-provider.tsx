@@ -9,6 +9,7 @@ import { signalTrackClient } from "@/lib/api/client";
 type AuthContextValue = {
   user: CurrentUser | null;
   isLoading: boolean;
+  isSigningOut: boolean;
   login: (input: LoginInput) => Promise<void>;
   logout: () => Promise<void>;
 };
@@ -16,6 +17,7 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue>({
   user: null,
   isLoading: true,
+  isSigningOut: false,
   login: async () => undefined,
   logout: async () => undefined
 });
@@ -52,6 +54,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       value={{
         user,
         isLoading: sessionQuery.isLoading || loginMutation.isPending || logoutMutation.isPending,
+        isSigningOut: logoutMutation.isPending,
         login: async (input) => {
           await loginMutation.mutateAsync(input);
         },

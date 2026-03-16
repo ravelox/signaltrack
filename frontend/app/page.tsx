@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { MetricCard } from "@/components/cards/metric-card";
 import { Panel } from "@/components/ui/panel";
@@ -14,6 +14,11 @@ export default function HomePage() {
   const [email, setEmail] = useState("admin@signaltrack.local");
   const [password, setPassword] = useState("change-me-admin");
   const [error, setError] = useState("");
+  const [signedOut, setSignedOut] = useState(false);
+
+  useEffect(() => {
+    setSignedOut(new URLSearchParams(window.location.search).get("signed_out") === "1");
+  }, []);
 
   const submit = async () => {
     setError("");
@@ -39,6 +44,11 @@ export default function HomePage() {
       {!user ? (
         <Panel className="mx-auto max-w-xl p-6">
           <div className="space-y-4">
+            {signedOut ? (
+              <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                You have been signed out.
+              </div>
+            ) : null}
             <div>
               <div className="text-sm font-semibold">Default admin</div>
               <div className="mt-1 text-sm text-muted">A local admin user is created during backend migration.</div>
